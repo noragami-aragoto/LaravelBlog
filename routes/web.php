@@ -23,7 +23,7 @@ Route::group(['prefix' => 'admin/blog'], function () {
     $methods = ['index', 'edit', 'store', 'update', 'create'];
     Route::resource('categories', CategoryController::class)
         ->only($methods)
-        ->names('blog.admin.categopries');
+        ->names('blog.admin.categories');
 });
 
 Route::group(['prefix' => 'blog'], function () {

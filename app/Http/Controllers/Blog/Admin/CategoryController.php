@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Blog\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Blog\BaseController;
+use App\Models\BlogCategory;
+use Illuminate\Http\Request;
 
 class CategoryController extends BaseController
 {
@@ -14,7 +15,8 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        dd(__METHOD__);
+        $pagination = BlogCategory::paginate(3);
+        return view('blog.admin.category.index', compact('pagination'));
     }
 
     /**
@@ -38,7 +40,6 @@ class CategoryController extends BaseController
         //
     }
 
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -47,7 +48,9 @@ class CategoryController extends BaseController
      */
     public function edit($id)
     {
-        //
+        $item = BlogCategory::findOrFail($id);
+        $allCategories = BlogCategory::all();
+        return view('blog.admin.category.edit', compact('item', 'allCategories'));
     }
 
     /**
@@ -59,8 +62,23 @@ class CategoryController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $item = BlogCategory::find($id);
+        if (is_null($item)) {
+            return back()
+                ->withErrors(['msg' => 'No such item ' . $id])
+                ->withInput();
+        }
+
+        $data = $request->all();
+        $result = $item->fill($data)->save();
+        if ($result) {
+            return redirect()
+                ->route('blog.admin.categories.edit', $item->id)
+                ->with(['success' => 'Item updated successfully']);
+        } else {
+            return back()
+                ->withErrors(['msg' => 'Invalid save item'])
+                ->withInput();
+        }
     }
-
-
 }
