@@ -1,6 +1,10 @@
 <x-app-layout>
     <div class="bg-gray-50 min-h-screen container mx-auto">
         <div class="p-4">
+            <a class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded mb-5"
+               href="{{ route('blog.admin.categories.create') }}">
+                Добавить
+            </a>
             <div class="bg-white p-4 rounded-md">
                 <div>
                     <h2 class="mb-4 text-xl font-bold text-gray-700">Admin & User</h2>
