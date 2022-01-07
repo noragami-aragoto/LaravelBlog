@@ -5,31 +5,46 @@ namespace App\Http\Controllers\Blog\Admin;
 use App\Http\Controllers\Blog\BaseController;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
-use Illuminate\Http\Request;
+use App\Repositories\BlogCategoryRepository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 
 class CategoryController extends BaseController
 {
+
+    private $repository;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->repository = app(BlogCategoryRepository::class);
+    }
+
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Factory|Application|View
      */
     public function index()
     {
-        $pagination = BlogCategory::paginate(3);
-        return view('blog.admin.category.index', compact('pagination'));
+        $pagination = $this->repository->getAllWithPaginate(5);
+        return view('blog.admin.category.index',
+            compact('pagination'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function create()
+    public function create(BlogCategoryRepository $repository)
     {
         $item = new BlogCategory();
-        $allCategories = BlogCategory::all();
+        $allCategories = $this->repository->getComboBox();
         return view('blog.admin.category.edit',
             compact('item', 'allCategories'));
     }
@@ -37,10 +52,10 @@ class CategoryController extends BaseController
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @param BlogCategoryUpdateRequest $request
+     * @return RedirectResponse
      */
-    public function store(BlogCategoryUpdateRequest $request)
+    public function store(BlogCategoryUpdateRequest $request): RedirectResponse
     {
         $data = $request->input();
         if (empty($data['slug'])) {
@@ -64,12 +79,12 @@ class CategoryController extends BaseController
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function edit($id)
+    public function edit(int $id)
     {
-        $item = BlogCategory::findOrFail($id);
-        $allCategories = BlogCategory::all();
+        $item = $this->repository->getById($id);
+        $allCategories = $this->repository->getComboBox();
         return view('blog.admin.category.edit', compact('item', 'allCategories'));
     }
 
@@ -77,11 +92,11 @@ class CategoryController extends BaseController
      * Update the specified resource in storage.
      *
      * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function update(BlogCategoryUpdateRequest $request, $id)
+    public function update(BlogCategoryUpdateRequest $request, $id): RedirectResponse
     {
-        $item = BlogCategory::find($id);
+        $item = $this->repository->getById($id);
         if (is_null($item)) {
             return back()
                 ->withErrors(['msg' => 'No such item ' . $id])
