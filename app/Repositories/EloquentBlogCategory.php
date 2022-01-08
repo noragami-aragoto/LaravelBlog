@@ -4,29 +4,28 @@ namespace App\Repositories;
 
 use App\Models\BlogCategory;
 use App\Repositories\Interfaces\BlogCategoryRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 
-class BlogCategoryRepository implements BlogCategoryRepositoryInterface
+class EloquentBlogCategory implements BlogCategoryRepositoryInterface
 {
-
+    /**
+     * @var Model
+     */
     private $model;
 
-    public function __construct()
+    public function __construct(BlogCategory $model)
     {
-        $this->model = app(BlogCategory::class);
+        $this->model = $model;
     }
 
-    protected function startCondition()
-    {
-        return clone $this->model;
-    }
 
-    /**
+    /**s
      * @param int $id
      * @return mixed
      */
     public function getById(int $id)
     {
-        return $this->startCondition()->find($id);
+        return $this->model->find($id);
     }
 
     public function getComboBox()
@@ -35,7 +34,7 @@ class BlogCategoryRepository implements BlogCategoryRepositoryInterface
             'id',
             'CONCAT (id, ". " ,title) as id_title'
         ]);
-        return $this->startCondition()
+        return $this->model
             ->selectRaw($fields)
             ->toBase()
             ->get();
@@ -44,7 +43,7 @@ class BlogCategoryRepository implements BlogCategoryRepositoryInterface
     public function getAllWithPaginate(int $perPage)
     {
         $columns = ['id', 'title', 'parent_id'];
-        return $this->startCondition()
+        return $this->model
             ->select($columns)
             ->paginate($perPage);
     }

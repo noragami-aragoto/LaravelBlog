@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Blog\Admin;
 use App\Http\Controllers\Blog\BaseController;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
-use App\Repositories\BlogCategoryRepository;
+use App\Repositories\EloquentBlogCategory;
+use App\Repositories\Interfaces\BlogCategoryRepositoryInterface;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -15,12 +16,15 @@ use Illuminate\Support\Str;
 class CategoryController extends BaseController
 {
 
+
+    /**
+     * @var BlogCategoryRepositoryInterface
+     */
     private $repository;
 
-    public function __construct()
+    public function __construct(BlogCategoryRepositoryInterface $blogRepository)
     {
-        parent::__construct();
-        $this->repository = app(BlogCategoryRepository::class);
+        $this->repository = $blogRepository;
     }
 
 
@@ -41,7 +45,7 @@ class CategoryController extends BaseController
      *
      * @return Application|Factory|View
      */
-    public function create(BlogCategoryRepository $repository)
+    public function create(EloquentBlogCategory $repository)
     {
         $item = new BlogCategory();
         $allCategories = $this->repository->getComboBox();

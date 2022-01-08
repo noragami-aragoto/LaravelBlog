@@ -20,4 +20,5 @@ class BlogCategory extends Model
     );
 
 
+
 }
