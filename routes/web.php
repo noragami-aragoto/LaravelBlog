@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Blog\PostController;
+use App\Http\Controllers\Blog\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Blog\Admin\CategoryController;
 
 /*
@@ -21,9 +22,15 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin/blog'], function () {
     $methods = ['index', 'edit', 'store', 'update', 'create'];
+
     Route::resource('categories', CategoryController::class)
         ->only($methods)
         ->names('blog.admin.categories');
+
+    Route::resource('posts', AdminPostController::class)
+        ->except(['store'])
+        ->names('blog.admin.categories');
+
 });
 
 Route::group(['prefix' => 'blog'], function () {
